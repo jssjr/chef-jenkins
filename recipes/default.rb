@@ -24,11 +24,13 @@
 pkey = "#{node[:jenkins][:server][:home]}/.ssh/id_rsa"
 tmp = "/tmp"
 
-if system("netstat -t")
+if system("netstat -t 2>/dev/null")
   netstat_cmd = "netstat -lnt"
 else
   netstat_cmd = "netstat -ln -p tcp"
 end
+
+package "jenkins" if node.platform == "freebsd"
 
 user node[:jenkins][:server][:user] do
   home node[:jenkins][:server][:home]
@@ -146,12 +148,6 @@ when "freebsd"
   package_provider = Chef::Provider::Package::Freebsd
   pid_file = "/var/run/jenkins.pid"
   install_starts_service = false
-
-  # We need to install the package early on w/ freebsd so the init script is present
-  package "jenkins" do
-    provider package_provider
-    action :install
-  end
 
 
 end

@@ -34,7 +34,12 @@ else
   default[:jenkins][:server][:group] = node[:jenkins][:server][:user]
 end
 
-default[:jenkins][:server][:port] = 8080
+case node[:platform]
+when "freebsd"
+  default[:jenkins][:server][:port] = 8180
+else
+  default[:jenkins][:server][:port] = 8080
+end
 default[:jenkins][:server][:host] = node[:fqdn]
 default[:jenkins][:server][:url]  = "http://#{node[:jenkins][:server][:host]}:#{node[:jenkins][:server][:port]}"
 
