@@ -24,6 +24,12 @@
 pkey = "#{node[:jenkins][:server][:home]}/.ssh/id_rsa"
 tmp = "/tmp"
 
+if system("netstat -t")
+  netstat_cmd = "netstat -lnt"
+else
+  netstat_cmd = "netstat -ln -p tcp"
+end
+
 user node[:jenkins][:server][:user] do
   home node[:jenkins][:server][:home]
 end
@@ -155,8 +161,8 @@ end
 ruby_block "netstat" do
   block do
     10.times do
-      if IO.popen("netstat -lnt").entries.select { |entry|
-          entry.split[3] =~ /:#{node[:jenkins][:server][:port]}$/
+      if IO.popen(netstat_cmd).entries.select { |entry|
+          entry.split[3] =~ /[.:]#{node[:jenkins][:server][:port]}$/
         }.size == 0
         break
       end
@@ -169,8 +175,8 @@ end
 
 ruby_block "block_until_operational" do
   block do
-    until IO.popen("netstat -lnt").entries.select { |entry|
-        entry.split[3] =~ /:#{node[:jenkins][:server][:port]}$/
+    until IO.popen(netstat_cmd).entries.select { |entry|
+        entry.split[3] =~ /[.:]#{node[:jenkins][:server][:port]}$/
       }.size == 1
       Chef::Log.debug "service[jenkins] not listening on port #{node.jenkins.server.port}"
       sleep 1
