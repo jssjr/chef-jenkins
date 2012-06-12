@@ -197,7 +197,11 @@ service "jenkins" do
   supports [ :stop, :start, :restart, :status ]
   #"jenkins status" will exit(0) even when the process is not running
   status_command "test -f #{pid_file} && kill -0 `cat #{pid_file}`"
-  action :nothing
+  if node.platform == "freebsd"
+    action :enable
+  else
+    action :nothing
+  end
 end
 
 if node.platform == "ubuntu" || node.platform == "freebsd"
