@@ -158,7 +158,7 @@ ruby_block "netstat" do
   block do
     10.times do
       if IO.popen(netstat_cmd).entries.select { |entry|
-          entry.split[3] =~ /[.:]#{node[:jenkins][:server][:port]}$/
+          entry.split[3] =~ /[:.]#{node[:jenkins][:server][:port]}$/
         }.size == 0
         break
       end
@@ -172,7 +172,7 @@ end
 ruby_block "block_until_operational" do
   block do
     until IO.popen(netstat_cmd).entries.select { |entry|
-        entry.split[3] =~ /[.:]#{node[:jenkins][:server][:port]}$/
+        entry.split[3] =~ /[:.]#{node[:jenkins][:server][:port]}$/
       }.size == 1
       Chef::Log.debug "service[jenkins] not listening on port #{node.jenkins.server.port}"
       sleep 1
