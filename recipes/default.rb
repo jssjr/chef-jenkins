@@ -135,6 +135,19 @@ when "centos", "redhat"
     action :nothing
   end
 
+
+when "freebsd"
+  package_provider = Chef::Provider::Package::Freebsd
+  pid_file = "/var/run/jenkins.pid"
+  install_starts_service = false
+
+  # We need to install the package early on w/ freebsd so the init script is present
+  package "jenkins" do
+    provider package_provider
+    action :install
+  end
+
+
 end
 
 #"jenkins stop" may (likely) exit before the process is actually dead
@@ -181,7 +194,7 @@ service "jenkins" do
   action :nothing
 end
 
-if node.platform == "ubuntu"
+if node.platform == "ubuntu" || node.platform == "freebsd"
   execute "setup-jenkins" do
     command "echo w00t"
     notifies :stop, "service[jenkins]", :immediately
@@ -227,7 +240,7 @@ end
 #providers will throw an exception if `source' doesn't exist
 package "jenkins" do
   provider package_provider
-  source local if node.platform != "ubuntu"
+  source local if node.platform != "ubuntu" || node.platform != "freebsd"
   action :nothing
 end
 
