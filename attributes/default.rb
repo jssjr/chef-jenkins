@@ -37,10 +37,11 @@ end
 case node[:platform]
 when "freebsd"
   default[:jenkins][:server][:port] = 8180
+  default[:jenkins][:server][:host] = '127.0.0.1'
 else
   default[:jenkins][:server][:port] = 8080
+  default[:jenkins][:server][:host] = node[:fqdn]
 end
-default[:jenkins][:server][:host] = node[:fqdn]
 default[:jenkins][:server][:url]  = "http://#{node[:jenkins][:server][:host]}:#{node[:jenkins][:server][:port]}"
 
 default[:jenkins][:iptables_allow] = "enable"

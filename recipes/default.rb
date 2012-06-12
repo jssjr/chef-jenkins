@@ -27,8 +27,9 @@ tmp = "/tmp"
 if system("netstat -t 2>/dev/null")
   netstat_cmd = "netstat -lnt"
 else
-  netstat_cmd = "netstat -ln -p tcp"
+  netstat_cmd = "netstat -an -p tcp"
 end
+Chef::Log.debug netstat_cmd
 
 package "jenkins" if node.platform == "freebsd"
 
